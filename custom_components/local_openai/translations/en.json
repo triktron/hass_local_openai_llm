@@ -75,14 +75,16 @@
             "temperature": "Temperature",
             "max_message_history": "Max message history size (0 for no limit)",
             "parallel_tool_calls": "Parallel tool calling",
-            "content_injection_method": "Date/Time context injection role"
+            "content_injection_method": "Date/Time context injection role",
+            "user_message_prefix": "User message prefix"
           },
           "data_description": {
             "model": "The model to use for the conversation agent",
             "prompt": "Instruct how the LLM should respond. This can be a template",
             "parallel_tool_calls": "Allow the model to use multiple tools in a single turn",
             "temperature": "Lower for more predictable responses, higher for more randomness",
-            "content_injection_method": "The message role to insert dynamic content as. See the readme for details"
+            "content_injection_method": "The message role to insert dynamic content as. See the readme for details",
+            "user_message_prefix": "Text to prepend to the last user message before sending to the model (e.g. '/no_think' for Qwen models to suppress reasoning tokens)"
           },
           "sections": {
             "chat_template_opts": {
@@ -117,14 +119,16 @@
             "temperature": "Temperature",
             "max_message_history": "Max message history size (0 for no limit)",
             "parallel_tool_calls": "Parallel tool calling",
-            "content_injection_method": "Date/Time context injection role"
+            "content_injection_method": "Date/Time context injection role",
+            "user_message_prefix": "User message prefix"
           },
           "data_description": {
             "model": "The model to use for the conversation agent",
             "prompt": "Instruct how the LLM should respond. This can be a template",
             "parallel_tool_calls": "Allow the model to use multiple tools in a single turn",
             "temperature": "Lower for more predictable responses, higher for more randomness",
-            "content_injection_method": "The message role to insert dynamic content as. See the readme for details"
+            "content_injection_method": "The message role to insert dynamic content as. See the readme for details",
+            "user_message_prefix": "Text to prepend to the last user message before sending to the model (e.g. '/no_think' for Qwen models to suppress reasoning tokens)"
           },
           "sections": {
             "chat_template_opts": {

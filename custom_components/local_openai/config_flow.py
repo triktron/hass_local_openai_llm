@@ -42,6 +42,7 @@ from .const import (
     CONF_SERVER_NAME,
     CONF_STRIP_EMOJIS,
     CONF_TEMPERATURE,
+    CONF_USER_MESSAGE_PREFIX,
     CONF_WEAVIATE_API_KEY,
     CONF_WEAVIATE_CLASS_NAME,
     CONF_WEAVIATE_DEFAULT_CLASS_NAME,
@@ -325,6 +326,10 @@ class ConversationFlowHandler(LocalAiSubentryFlowHandler):
                     options=CONF_CONTENT_INJECTION_METHODS,
                 )
             ),
+            vol.Optional(
+                CONF_USER_MESSAGE_PREFIX,
+                default="",
+            ): str,
             vol.Required(CONF_CHAT_TEMPLATE_OPTS): section(
                 options=SectionConfig(collapsed=True),
                 schema=vol.Schema(

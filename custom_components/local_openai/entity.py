@@ -50,6 +50,7 @@ from .const import (
     CONF_PARALLEL_TOOL_CALLS,
     CONF_STRIP_EMOJIS,
     CONF_TEMPERATURE,
+    CONF_USER_MESSAGE_PREFIX,
     CONF_WEAVIATE_API_KEY,
     CONF_WEAVIATE_CLASS_NAME,
     CONF_WEAVIATE_DEFAULT_CLASS_NAME,
@@ -342,19 +343,26 @@ class LocalAiEntity(Entity):
                         None, demoji.replace, content, ""
                     )
 
-                if content == "<think>":
+                # Handle <think> tags that may appear within larger chunks
+                # (not just as exact token matches)
+                if "<think>" in content:
                     in_think = True
+                    content = content.replace("<think>", "")
                     pending_think = ""
 
                 if in_think:
-                    if content == "</think>":
+                    if "</think>" in content:
                         in_think = False
+                        remaining = content.split("</think>", 1)[1]
                         if pending_think.strip():
                             LOGGER.debug(f"LLM Thought: {pending_think}")
                         pending_think = ""
-                    elif content != "<think>":
-                        pending_think = pending_think + content
-                elif content.strip():
+                        content = remaining
+                    else:
+                        pending_think += content
+                        content = ""
+
+                if not in_think and content.strip():
                     seen_visible = True
 
                 if seen_visible:
@@ -499,6 +507,21 @@ class LocalAiEntity(Entity):
                     for tool in tools
                     if not tool["function"]["name"].endswith("GetDateTime")
                 ]
+        # Optionally prefix the last user message (e.g. "/no_think" for Qwen models)
+        user_prefix = options.get(CONF_USER_MESSAGE_PREFIX, "")
+        if user_prefix and messages and messages[-1].get("role") == "user":
+            prefix = user_prefix.strip()
+            if prefix:
+                last_msg = messages[-1]
+                msg_content = last_msg.get("content", "")
+                if isinstance(msg_content, list):
+                    for part in msg_content:
+                        if part.get("type") == "text":
+                            part["text"] = prefix + " " + part["text"]
+                            break
+                elif isinstance(msg_content, str):
+                    last_msg["content"] = prefix + " " + msg_content
+
         model_args["messages"] = messages
 
         if tools:
