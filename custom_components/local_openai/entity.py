@@ -574,7 +574,20 @@ class LocalAiEntity(Entity):
                 raise HomeAssistantError("Error handling API response") from err
 
             if not chat_log.unresponded_tool_results:
-                break
+                # If the last assistant message only contained tool calls and no
+                # spoken content, do one more pass so the LLM can generate an
+                # in-character confirmation response.
+                last_assistant = next(
+                    (
+                        m for m in reversed(model_args["messages"])
+                        if m.get("role") == "assistant"
+                    ),
+                    None,
+                )
+                has_spoken_content = last_assistant and last_assistant.get("content")
+                if has_spoken_content:
+                    break
+                # No spoken content yet — loop once more for the LLM to respond
 
     @staticmethod
     def _trim_history(messages: list, max_messages: int) -> list:
